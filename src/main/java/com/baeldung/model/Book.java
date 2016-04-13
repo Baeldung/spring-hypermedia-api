@@ -11,16 +11,16 @@ public class Book {
     private long id;
 
     @Column(nullable = false)
-    private String name;
+    private String title;
 
     public Book() {
         super();
     }
 
-    public Book(final String name) {
+    public Book(final String title) {
         super();
 
-        this.name = name;
+        this.title = title;
     }
 
     //
@@ -33,12 +33,12 @@ public class Book {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
 }

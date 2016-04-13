@@ -1,27 +1,23 @@
 package com.baeldung.web.resource;
 
-import org.springframework.hateoas.ResourceSupport;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import javax.validation.constraints.NotNull;
+
+import org.springframework.hateoas.Resource;
 
 import com.baeldung.model.Book;
 import com.baeldung.web.controller.BookController;
 
-public class BookResource extends ResourceSupport {
-
-    private final Book book;
+public class BookResource extends Resource<Book> {
 
     public BookResource(@NotNull final Book book) {
-        this.book = book;
+        super(book);
 
         this.add(linkTo(methodOn(BookController.class, book).findOne(book.getId())).withSelfRel());
     }
 
     //
-
-    public Book getBook() {
-        return book;
-    }
 
 }
