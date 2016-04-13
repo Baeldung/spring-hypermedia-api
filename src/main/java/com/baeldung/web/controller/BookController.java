@@ -14,19 +14,19 @@ import com.baeldung.web.resource.BookResource;
 @RestController
 public class BookController {
 
-	@Autowired
-	private BookRepository bookRepository;
+    @Autowired
+    private BookRepository bookRepository;
 
-	//
+    //
 
-	@RequestMapping("/{id}")
-	public BookResource findOne(@PathVariable("id") long id) {
-		final Book book = bookRepository.findOne(id);
-		if (book == null) {
-			throw new EntityNotFoundException("No book found for id = " + id);
-		}
+    @RequestMapping("/{id}")
+    public BookResource findOne(@PathVariable("id") long id) {
+        final Book book = bookRepository.findOne(id);
+        if (book == null) {
+            throw new EntityNotFoundException("No book found for id = " + id);
+        }
 
-		return new BookResource(book);
-	}
+        return new BookResource(book);
+    }
 
 }

@@ -10,18 +10,18 @@ import com.baeldung.web.controller.BookController;
 
 public class BookResource extends ResourceSupport {
 
-	private final Book book;
+    private final Book book;
 
-	public BookResource(@NotNull final Book book) {
-		this.book = book;
+    public BookResource(@NotNull final Book book) {
+        this.book = book;
 
-		this.add(linkTo(methodOn(BookController.class, book).findOne(book.getId())).withSelfRel());
-	}
+        this.add(linkTo(methodOn(BookController.class, book).findOne(book.getId())).withSelfRel());
+    }
 
-	//
+    //
 
-	public Book getBook() {
-		return book;
-	}
+    public Book getBook() {
+        return book;
+    }
 
 }
