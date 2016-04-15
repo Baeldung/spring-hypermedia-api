@@ -9,9 +9,11 @@ import org.springframework.hateoas.Resource;
 
 import com.baeldung.model.Book;
 import com.baeldung.web.controller.BookController;
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 public class BookResource extends Resource<Book> {
 
+    @JsonCreator
     public BookResource(@NotNull final Book book) {
         super(book);
 

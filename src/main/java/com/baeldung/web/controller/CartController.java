@@ -1,6 +1,7 @@
 package com.baeldung.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,6 +41,7 @@ public class CartController {
             this.cart.setPurchased(true);
         }
 
+        cart.add(new Link("http://localhost:8081/api/receipt/1").withRel("receipt"));
         return this.cart;
     }
 
@@ -51,6 +53,7 @@ public class CartController {
     @RequestMapping(method = RequestMethod.DELETE)
     public void clearYourCart() {
         initializeCart().getBooks().clear();
+        this.cart.setPurchased(false);
     }
 
     //
