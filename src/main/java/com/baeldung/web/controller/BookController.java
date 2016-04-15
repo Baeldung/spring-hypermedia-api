@@ -1,6 +1,10 @@
 package com.baeldung.web.controller;
 
-import javax.persistence.EntityNotFoundException;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.baeldung.model.Book;
 import com.baeldung.persistence.BookRepository;
+import com.baeldung.web.error.Checks;
 import com.baeldung.web.resource.BookResource;
 
 @RestController
@@ -20,17 +25,26 @@ public class BookController {
     @Autowired
     private BookRepository repo;
 
-    //
+    // read
 
-    @RequestMapping("/{id}")
-    public BookResource findOne(@PathVariable("id") long id) {
-        final Book book = repo.findOne(id);
-        if (book == null) {
-            throw new EntityNotFoundException("No book found for id = " + id);
-        }
+    @RequestMapping("/{isbn}")
+    public BookResource findByIsbn(@PathVariable final String isbn) {
+        final Book book = Checks.checkEntityExists(repo.findByIsbn(isbn), "No book found for isbn = " + isbn);
 
-        return new BookResource(book);
+        final BookResource bookResource = new BookResource(book);
+        bookResource.add(linkTo(methodOn(CartController.class).addBookToCart(bookResource)).withRel("buy"));
+
+        return bookResource;
     }
+
+    @RequestMapping(method = RequestMethod.GET)
+    public List<BookResource> findAll() {
+        final List<Book> books = (List<Book>) repo.findAll();
+        final List<BookResource> bookResources = books.stream().map(BookResource::new).collect(Collectors.toList());
+        return bookResources;
+    }
+
+    // write
 
     @RequestMapping(method = RequestMethod.POST)
     public void create(@RequestBody BookResource newBook) {
