@@ -1,26 +1,35 @@
 package com.baeldung.web.resource;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.ResourceSupport;
 
 import com.baeldung.model.Book;
+import com.baeldung.model.BookView;
 import com.baeldung.web.controller.BookController;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonView;
 
-public class BookResource extends Resource<Book> {
+public class BookResource extends ResourceSupport {
+
+    @JsonView(BookView.Summary.class)
+    private final Book book;
 
     @JsonCreator
     public BookResource(@NotNull final Book book) {
-        super(book);
+        this.book = book;
 
-        this.add(linkTo(methodOn(BookController.class, book).findByIsbn(book.getIsbn())).withSelfRel());
-        // this.add(linkTo(BookController.class).slash(book.getIsbn()).withSelfRel());
+        // this.add(BasicLinkBuilder.linkToCurrentMapping().slash("/books").slash(book.getIsbn()).withSelfRel());
+        // this.add(linkTo(methodOn(BookController.class, book).findByIsbn(book.getIsbn())).withSelfRel());
+        this.add(linkTo(BookController.class).slash(book.getIsbn()).withSelfRel());
     }
 
     //
+
+    public Book getBook() {
+        return book;
+    }
 
 }

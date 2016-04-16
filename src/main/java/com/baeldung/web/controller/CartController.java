@@ -26,8 +26,8 @@ public class CartController {
 
     @RequestMapping(method = RequestMethod.POST)
     public CartResource addBookToCart(@RequestBody final BookResource book) {
-        final String isbn = book.getContent().getIsbn();
-        final Book bookToAdd = Checks.checkEntityExists(bookRepo.findByIsbn(book.getContent().getIsbn()), "No Book found for isbn: " + isbn);
+        final String isbn = book.getBook().getIsbn();
+        final Book bookToAdd = Checks.checkEntityExists(bookRepo.findByIsbn(book.getBook().getIsbn()), "No Book found for isbn: " + isbn);
 
         initializeCart().add(bookToAdd);
         return cart;
