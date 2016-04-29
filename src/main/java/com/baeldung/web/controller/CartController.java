@@ -2,9 +2,11 @@ package com.baeldung.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baeldung.model.Book;
@@ -12,6 +14,7 @@ import com.baeldung.persistence.BookRepository;
 import com.baeldung.web.error.Checks;
 import com.baeldung.web.resource.BookResource;
 import com.baeldung.web.resource.CartResource;
+import com.baeldung.web.resource.NewBookResource;
 
 @RestController
 @RequestMapping(value = "/cart")
@@ -24,8 +27,24 @@ public class CartController {
 
     // read
 
+    @RequestMapping(method = RequestMethod.GET)
+    public CartResource seeYourCart() {
+        return initializeCart();
+    }
+
+    // write
+
     @RequestMapping(method = RequestMethod.POST)
     public CartResource addBookToCart(@RequestBody final BookResource book) {
+        final String isbn = book.getBook().getIsbn();
+        final Book bookToAdd = Checks.checkEntityExists(bookRepo.findByIsbn(book.getBook().getIsbn()), "No Book found for isbn: " + isbn);
+
+        initializeCart().add(bookToAdd);
+        return cart;
+    }
+
+    @RequestMapping(value = "/new", method = RequestMethod.POST)
+    public CartResource addNewBookToCart(@RequestBody final NewBookResource book) {
         final String isbn = book.getBook().getIsbn();
         final Book bookToAdd = Checks.checkEntityExists(bookRepo.findByIsbn(book.getBook().getIsbn()), "No Book found for isbn: " + isbn);
 
@@ -45,12 +64,8 @@ public class CartController {
         return this.cart;
     }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public CartResource seeYourCart() {
-        return initializeCart();
-    }
-
     @RequestMapping(method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void clearYourCart() {
         initializeCart().getBooks().clear();
         this.cart.setPurchased(false);

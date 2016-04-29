@@ -10,15 +10,16 @@ import com.baeldung.model.Book;
 import com.baeldung.model.BookView;
 import com.baeldung.web.controller.BookController;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonView;
 
-public class BookResource extends ResourceSupport {
+public class NewBookResource extends ResourceSupport {
 
     @JsonView(BookView.Summary.class)
     private final Book book;
 
     @JsonCreator
-    public BookResource(@NotNull final Book book) {
+    public NewBookResource(@NotNull final Book book) {
         this.book = book;
 
         // this.add(BasicLinkBuilder.linkToCurrentMapping().slash("/books").slash(book.getIsbn()).withSelfRel());
@@ -28,6 +29,7 @@ public class BookResource extends ResourceSupport {
 
     //
 
+    @JsonFilter("bookFilter")
     public Book getBook() {
         return book;
     }

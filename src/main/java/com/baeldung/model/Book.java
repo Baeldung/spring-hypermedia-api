@@ -4,12 +4,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
-@JsonFilter("bookFilter")
+// @JsonFilter("bookFilter")
 public class Book {
 
     @JsonIgnore
@@ -91,6 +90,11 @@ public class Book {
         } else if (!title.equals(other.title))
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Book [isbn=" + isbn + ", title=" + title + "]";
     }
 
 }

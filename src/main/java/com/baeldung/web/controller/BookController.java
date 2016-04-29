@@ -7,12 +7,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baeldung.model.Book;
@@ -21,9 +19,6 @@ import com.baeldung.persistence.BookRepository;
 import com.baeldung.web.error.Checks;
 import com.baeldung.web.resource.BookResource;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 @RestController
 @RequestMapping(value = "/books")
@@ -35,31 +30,13 @@ public class BookController {
     // read
 
     @RequestMapping("/{isbn}")
-    public MappingJacksonValue findByIsbn(@PathVariable final String isbn) {
+    public BookResource findByIsbn(@PathVariable final String isbn) {
         final Book book = Checks.checkEntityExists(repo.findByIsbn(isbn), "No book found for isbn = " + isbn);
 
         final BookResource bookResource = new BookResource(book);
         bookResource.add(linkTo(methodOn(CartController.class).addBookToCart(bookResource)).withRel("buy"));
 
-        final FilterProvider filterProvider = new SimpleFilterProvider().addFilter("bookFilter", SimpleBeanPropertyFilter.serializeAll());
-        final MappingJacksonValue wrapper = new MappingJacksonValue(bookResource);
-        wrapper.setFilters(filterProvider);
-
-        return wrapper;
-    }
-
-    @RequestMapping(value = "/{isbn}", params = "fields")
-    public MappingJacksonValue findByIsbnFiltered(@RequestParam String fields, @PathVariable final String isbn) {
-        final Book book = Checks.checkEntityExists(repo.findByIsbn(isbn), "No book found for isbn = " + isbn);
-
-        final BookResource bookResource = new BookResource(book);
-        bookResource.add(linkTo(methodOn(CartController.class).addBookToCart(bookResource)).withRel("buy"));
-
-        final FilterProvider filterProvider = new SimpleFilterProvider().addFilter("bookFilter", SimpleBeanPropertyFilter.filterOutAllExcept(fields));
-        final MappingJacksonValue wrapper = new MappingJacksonValue(bookResource);
-        wrapper.setFilters(filterProvider);
-
-        return wrapper;
+        return bookResource;
     }
 
     @JsonView(BookView.Summary.class)
