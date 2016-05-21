@@ -1,15 +1,14 @@
 package com.baeldung.web.controller;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baeldung.model.Book;
+import com.baeldung.model.Cart;
 import com.baeldung.persistence.BookRepository;
 import com.baeldung.web.error.Checks;
 import com.baeldung.web.resource.BookResource;
@@ -18,9 +17,9 @@ import com.baeldung.web.resource.NewBookResource;
 
 @RestController
 @RequestMapping(value = "/cart")
-public class CartController {
+public class CartController implements InitializingBean {
 
-    private CartResource cart;
+    private Cart cart;
 
     @Autowired
     private BookRepository bookRepo;
@@ -29,7 +28,7 @@ public class CartController {
 
     @RequestMapping(method = RequestMethod.GET)
     public CartResource seeYourCart() {
-        return initializeCart();
+        return toResource();
     }
 
     // write
@@ -39,8 +38,8 @@ public class CartController {
         final String isbn = book.getBook().getIsbn();
         final Book bookToAdd = Checks.checkEntityExists(bookRepo.findByIsbn(book.getBook().getIsbn()), "No Book found for isbn: " + isbn);
 
-        initializeCart().add(bookToAdd);
-        return cart;
+        this.cart.add(bookToAdd);
+        return toResource();
     }
 
     @RequestMapping(value = "/new", method = RequestMethod.POST)
@@ -48,37 +47,34 @@ public class CartController {
         final String isbn = book.getBook().getIsbn();
         final Book bookToAdd = Checks.checkEntityExists(bookRepo.findByIsbn(book.getBook().getIsbn()), "No Book found for isbn: " + isbn);
 
-        initializeCart().add(bookToAdd);
-        return cart;
+        this.cart.add(bookToAdd);
+        return toResource();
     }
 
     @RequestMapping(method = RequestMethod.PATCH)
     public CartResource buy(@RequestBody final CartResource theCart) {
-        initializeCart();
+        this.cart.setPurchased(theCart.isPurchased());
 
-        if (theCart.isPurchased()) {
-            this.cart.setPurchased(true);
-        }
-
-        cart.add(new Link("http://localhost:8081/api/receipt/1").withRel("receipt"));
-        return this.cart;
+        return toResource();
     }
 
     @RequestMapping(method = RequestMethod.DELETE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void clearYourCart() {
-        initializeCart().getBooks().clear();
+    public CartResource clearYourCart() {
+        this.cart.getBooks().clear();
         this.cart.setPurchased(false);
+
+        return toResource();
     }
 
     //
 
-    public CartResource initializeCart() {
-        if (cart == null) {
-            this.cart = new CartResource();
-        }
+    private CartResource toResource() {
+        return new CartResource(this.cart.getBooks(), this.cart.isPurchased());
+    }
 
-        return this.cart;
+    @Override
+    public void afterPropertiesSet() {
+        this.cart = new Cart();
     }
 
 }

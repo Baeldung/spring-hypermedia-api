@@ -39,7 +39,7 @@ public class NewBookController {
         final Book book = Checks.checkEntityExists(repo.findByIsbn(isbn), "No book found for isbn = " + isbn);
 
         final NewBookResource bookResource = new NewBookResource(book);
-        bookResource.add(linkTo(methodOn(CartController.class).addNewBookToCart(bookResource)).withRel("buy"));
+        bookResource.add(linkTo(methodOn(CartController.class).addNewBookToCart(bookResource)).withRel("add-to-cart"));
 
         final FilterProvider filterProvider = new SimpleFilterProvider().addFilter("bookFilter", SimpleBeanPropertyFilter.serializeAll());
         final MappingJacksonValue wrapper = new MappingJacksonValue(bookResource);
@@ -53,7 +53,7 @@ public class NewBookController {
         final Book book = Checks.checkEntityExists(repo.findByIsbn(isbn), "No book found for isbn = " + isbn);
 
         final NewBookResource bookResource = new NewBookResource(book);
-        bookResource.add(linkTo(methodOn(CartController.class).addNewBookToCart(bookResource)).withRel("buy"));
+        bookResource.add(linkTo(methodOn(CartController.class).addNewBookToCart(bookResource)).withRel("add-to-cart"));
 
         final FilterProvider filterProvider = new SimpleFilterProvider().addFilter("bookFilter", SimpleBeanPropertyFilter.filterOutAllExcept(fields));
         final MappingJacksonValue wrapper = new MappingJacksonValue(bookResource);

@@ -34,14 +34,21 @@ public class BookController {
         final Book book = Checks.checkEntityExists(repo.findByIsbn(isbn), "No book found for isbn = " + isbn);
 
         final BookResource bookResource = new BookResource(book);
-        bookResource.add(linkTo(methodOn(CartController.class).addBookToCart(bookResource)).withRel("buy"));
+        bookResource.add(linkTo(methodOn(CartController.class).addBookToCart(bookResource)).withRel("add-to-cart"));
 
         return bookResource;
     }
 
-    @JsonView(BookView.Summary.class)
     @RequestMapping(method = RequestMethod.GET)
     public List<BookResource> findAll() {
+        final List<Book> books = (List<Book>) repo.findAll();
+        final List<BookResource> bookResources = books.stream().map(BookResource::new).collect(Collectors.toList());
+        return bookResources;
+    }
+
+    @JsonView(BookView.Summary.class)
+    @RequestMapping(method = RequestMethod.GET, params="summary")
+    public List<BookResource> findAllSummary() {
         final List<Book> books = (List<Book>) repo.findAll();
         final List<BookResource> bookResources = books.stream().map(BookResource::new).collect(Collectors.toList());
         return bookResources;
