@@ -2,6 +2,7 @@ package com.baeldung.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -12,7 +13,8 @@ public class Book {
 
     @JsonIgnore
     @Id
-    private long id;
+    @GeneratedValue
+    private Long id;
 
     @Column(nullable = false)
     @JsonView(BookView.Summary.class)
@@ -32,12 +34,9 @@ public class Book {
     private String language;
 
     public Book() {
-        super();
     }
 
     public Book(final String author, final String title, final String isbn) {
-        super();
-
         this.author = author;
         this.title = title;
         this.isbn = isbn;
@@ -45,11 +44,11 @@ public class Book {
 
     //
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
